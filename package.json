@@ -4,6 +4,8 @@
   "description": "A REST API for a Random Acts of Kindness app built with MongoDB, Express, Node, and TypeScript, developed as a final exam project.",
   "main": "index.js",
   "scripts": {
+    "dev": "npx nodemon",
+    "build": "rm -rf ./dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
