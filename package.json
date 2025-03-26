@@ -1,0 +1,46 @@
+{
+  "name": "random-acts-of-kindness-api",
+  "version": "1.0.0",
+  "description": "A REST API for a Random Acts of Kindness app built with MongoDB, Express, Node, and TypeScript, developed as a final exam project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noravitkai/random-acts-of-kindness-api.git"
+  },
+  "author": "noravitkai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noravitkai/random-acts-of-kindness-api/issues"
+  },
+  "homepage": "https://github.com/noravitkai/random-acts-of-kindness-api#readme",
+  "nodemonConfig": {
+    "verbose": false,
+    "watch": [
+      "src"
+    ],
+    "ext": "js,ts",
+    "exec": "npx ts-node ./src/index.ts",
+    "ignore": [
+      "node_modules"
+    ]
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv-flow": "^4.1.0",
+    "express": "^4.21.2",
+    "joi": "^17.13.3",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.0",
+    "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/joi": "^17.2.2",
+    "@types/node": "^22.13.13",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
