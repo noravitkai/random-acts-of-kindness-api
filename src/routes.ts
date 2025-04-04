@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   verifyToken,
+  verifyAdmin,
 } from "./controllers/authController";
 
 const router: Router = Router();

@@ -155,6 +155,32 @@ export function verifyToken(
 }
 
 /**
+ * Verify the client's privileges
+ * @param req
+ * @param res
+ * @param next
+ */
+export function verifyAdmin(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  const user = (req as any).user;
+
+  if (!user) {
+    res.status(403).json({ error: "Access denied due to no user found." });
+    return;
+  }
+
+  if (!user || user.role !== "admin") {
+    res.status(403).json({ error: "Access denied as only admins can access." });
+    return;
+  }
+
+  next();
+}
+
+/**
  * Validate user registration info
  */
 function validateUserRegistrationInfo(data: User): ValidationResult {
