@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { connect, disconnect } from "../repository/database";
+import { connect } from "../repository/database";
 import { CompletedActModel } from "../models/completedActModel";
 
 /**
@@ -22,8 +22,6 @@ export async function createCompletedAct(
     res.status(500).json({
       error: `Error creating completed act: ${(err as Error).message}`,
     });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -47,7 +45,5 @@ export async function getCompletedActsByUser(
     res.status(500).json({
       error: `Error fetching completed acts: ${(err as Error).message}`,
     });
-  } finally {
-    await disconnect();
   }
 }

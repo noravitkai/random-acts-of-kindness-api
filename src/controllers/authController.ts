@@ -5,7 +5,7 @@ import Joi, { ValidationResult } from "joi";
 
 import { UserModel } from "../models/userModel";
 import { User } from "../interfaces/userInterface";
-import { connect, disconnect } from "../repository/database";
+import { connect } from "../repository/database";
 
 /**
  * Register a new user
@@ -51,8 +51,6 @@ export async function registerUser(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     res.status(500).send("Error registering user. Error: " + error);
-  } finally {
-    await disconnect();
   }
 }
 
@@ -114,8 +112,6 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
       });
   } catch (error) {
     res.status(500).send("Error logging in the user. Error: " + error);
-  } finally {
-    await disconnect();
   }
 }
 

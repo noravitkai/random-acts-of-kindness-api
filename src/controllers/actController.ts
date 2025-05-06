@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { KindnessActModel } from "../models/kindnessActModel";
 // import { CategoryModel } from "../models/categoryModel"; // TODO: Add category handling later on
-import { connect, disconnect } from "../repository/database";
+import { connect } from "../repository/database";
 import mongoose from "mongoose";
 
 /**
@@ -49,8 +49,6 @@ export async function createKindnessAct(
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: "Error creating kindness act: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -73,8 +71,6 @@ export async function getAllKindnessActs(
     res.status(200).json(kindnessActs);
   } catch (error) {
     res.status(500).json({ error: "Error retrieving kindness acts: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -103,8 +99,6 @@ export async function getKindnessActById(
     res.status(200).json(kindnessAct);
   } catch (error) {
     res.status(500).json({ error: "Error retrieving kindness act: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -142,8 +136,8 @@ export async function updateKindnessActById(
       return;
     }
 
-    if (!isAdmin && "status" in updateData) {
-      delete updateData.status;
+    if (!isAdmin) {
+      updateData.status = "pending";
     }
 
     const updatedAct = await KindnessActModel.findByIdAndUpdate(
@@ -161,8 +155,6 @@ export async function updateKindnessActById(
     });
   } catch (error) {
     res.status(500).json({ error: "Error updating kindness act: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -206,7 +198,5 @@ export async function deleteKindnessActById(
     });
   } catch (error) {
     res.status(500).json({ error: "Error deleting kindness act: " + error });
-  } finally {
-    await disconnect();
   }
 }
