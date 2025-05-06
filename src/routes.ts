@@ -12,6 +12,10 @@ import {
   updateKindnessActById,
   deleteKindnessActById,
 } from "./controllers/actController";
+import {
+  createCompletedAct,
+  getCompletedActsByUser,
+} from "./controllers/completedController";
 
 const router: Router = Router();
 
@@ -30,5 +34,9 @@ router.get("/acts", getAllKindnessActs);
 router.get("/acts/:id", getKindnessActById);
 router.put("/acts/:id", verifyToken, updateKindnessActById);
 router.delete("/acts/:id", verifyToken, deleteKindnessActById);
+
+// Routes for acts completed by users
+router.post("/completed", verifyToken, createCompletedAct);
+router.get("/completed/:userId", verifyToken, getCompletedActsByUser);
 
 export default router;
