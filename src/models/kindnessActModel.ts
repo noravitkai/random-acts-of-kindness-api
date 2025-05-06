@@ -5,7 +5,7 @@ const kindnessActSchema = new Schema<KindnessAct>(
   {
     title: { type: String, required: true, min: 3, max: 255 },
     description: { type: String, required: true, min: 10, max: 1024 },
-    category: { type: String, ref: "Category", required: true },
+    // category: { type: String, ref: "Category", required: true }, // TODO: Include when categories get implemented
     difficulty: {
       type: String,
       enum: ["easy", "medium", "hard"],
