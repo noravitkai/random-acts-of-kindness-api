@@ -63,10 +63,12 @@ export async function getAllKindnessActs(
   try {
     await connect();
 
-    const kindnessActs = await KindnessActModel.find({})
+    const userId = (req as any).user?.userId;
+    const filter = userId ? { createdBy: userId } : {};
+    const kindnessActs = await KindnessActModel.find(filter)
       // TODO: Include category population later on
       // .populate("category", "name description")
-      .populate("createdBy", "username email");
+      .populate("createdBy", "_id username email");
 
     res.status(200).json(kindnessActs);
   } catch (error) {

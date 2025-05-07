@@ -3,8 +3,8 @@ import { CompletedAct } from "../interfaces/completedActInterface";
 
 const completedActSchema = new Schema<CompletedAct>(
   {
-    user: { type: String, ref: "User", required: true },
-    act: { type: String, ref: "KindnessAct", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    act: { type: Schema.Types.ObjectId, ref: "KindnessAct", required: true },
     completedAt: { type: Date, default: Date.now },
   },
   { timestamps: false }

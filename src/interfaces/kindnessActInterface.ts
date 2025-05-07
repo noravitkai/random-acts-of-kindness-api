@@ -1,12 +1,13 @@
+import { Types, Document } from "mongoose";
 import { User } from "./userInterface";
 import { Category } from "./categoryInterface";
 
 export interface KindnessAct extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   title: string;
   description: string;
-  category: Category["_id"];
+  category: Types.ObjectId | Category["_id"];
   difficulty: "easy" | "medium" | "hard";
-  createdBy: User["_id"];
+  createdBy: Types.ObjectId | User["_id"];
   status: "pending" | "approved" | "rejected";
 }
