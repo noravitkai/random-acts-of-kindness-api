@@ -16,6 +16,11 @@ import {
   createCompletedAct,
   getCompletedActsByUser,
 } from "./controllers/completedController";
+import {
+  saveAct,
+  getSavedActs,
+  deleteSavedAct,
+} from "./controllers/savedController";
 
 const router: Router = Router();
 
@@ -38,5 +43,10 @@ router.delete("/acts/:id", verifyToken, deleteKindnessActById);
 // Routes for acts completed by users
 router.post("/completed", verifyToken, createCompletedAct);
 router.get("/completed/:userId", verifyToken, getCompletedActsByUser);
+
+// Routes for acts saved by users
+router.post("/saved", verifyToken, saveAct);
+router.get("/saved/:userId", verifyToken, getSavedActs);
+router.delete("/saved/:id", verifyToken, deleteSavedAct);
 
 export default router;
