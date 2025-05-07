@@ -7,7 +7,8 @@ import {
 } from "./controllers/authController";
 import {
   createKindnessAct,
-  getAllKindnessActs,
+  getAllSuggestedActs,
+  getApprovedKindnessActs,
   getKindnessActById,
   updateKindnessActById,
   deleteKindnessActById,
@@ -35,7 +36,8 @@ router.post("/user/login", loginUser);
 
 // Routes for acts of kindness
 router.post("/acts", verifyToken, createKindnessAct);
-router.get("/acts", getAllKindnessActs);
+router.get("/acts", getApprovedKindnessActs);
+router.get("/acts/user", verifyToken, getAllSuggestedActs);
 router.get("/acts/:id", getKindnessActById);
 router.put("/acts/:id", verifyToken, updateKindnessActById);
 router.delete("/acts/:id", verifyToken, deleteKindnessActById);

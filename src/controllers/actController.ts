@@ -53,10 +53,10 @@ export async function createKindnessAct(
 }
 
 /**
- * Retrieve all kindness acts
- * Accessible by each authenticated user
+ * Retrieve all suggested kindness acts created by the authenticated user
+ * Accessible by each authenticated user, including pending, rejected, and approved acts
  */
-export async function getAllKindnessActs(
+export async function getAllSuggestedActs(
   req: Request,
   res: Response
 ): Promise<void> {
@@ -64,15 +64,47 @@ export async function getAllKindnessActs(
     await connect();
 
     const userId = (req as any).user?.userId;
-    const filter = userId ? { createdBy: userId } : {};
-    const kindnessActs = await KindnessActModel.find(filter)
-      // TODO: Include category population later on
-      // .populate("category", "name description")
-      .populate("createdBy", "_id username email");
+    if (!userId) {
+      res.status(403).json({
+        error: "Authentication required. Please log in to access your acts.",
+      });
+      return;
+    }
 
-    res.status(200).json(kindnessActs);
+    // Fetch all acts by the user regardless of status
+    const userActs = await KindnessActModel.find({
+      createdBy: userId,
+    }).populate("createdBy", "_id username email");
+
+    res.status(200).json(userActs);
   } catch (error) {
-    res.status(500).json({ error: "Error retrieving kindness acts: " + error });
+    res
+      .status(500)
+      .json({ error: "Error retrieving user kindness acts: " + error });
+  }
+}
+
+/**
+ * Retrieve all approved kindness acts
+ * Accessible by each authenticated user
+ */
+export async function getApprovedKindnessActs(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    await connect();
+
+    // Only fetch acts with status "approved"
+    const approvedActs = await KindnessActModel.find({
+      status: "approved",
+    }).populate("createdBy", "_id username email");
+
+    res.status(200).json(approvedActs);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error retrieving approved kindness acts: " + error });
   }
 }
 
