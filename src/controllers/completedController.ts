@@ -29,6 +29,10 @@ export async function createCompletedAct(
  * GET /completed/:userId
  * Requires auth-token header
  */
+/**
+ * GET /completed/:userId
+ * Requires auth-token header
+ */
 export async function getCompletedActsByUser(
   req: Request,
   res: Response
@@ -36,10 +40,9 @@ export async function getCompletedActsByUser(
   try {
     await connect();
     const userId = req.params.userId;
-    const list = await CompletedActModel.find({ user: userId }).populate(
-      "act",
-      "title description"
-    );
+    const list = await CompletedActModel.find({ user: userId })
+      .populate("act", "title")
+      .exec();
     res.status(200).json(list);
   } catch (err) {
     res.status(500).json({
