@@ -18,9 +18,10 @@ import {
   getCompletedActsByUser,
 } from "./controllers/completedController";
 import {
-  saveAct,
-  getSavedActs,
-  deleteSavedAct,
+  saveActForUser,
+  getUserSavedActs,
+  completeActForUser,
+  unsaveAct,
 } from "./controllers/savedController";
 
 const router: Router = Router();
@@ -47,8 +48,9 @@ router.post("/completed", verifyToken, createCompletedAct);
 router.get("/completed/:userId", verifyToken, getCompletedActsByUser);
 
 // Routes for acts saved by users
-router.post("/saved", verifyToken, saveAct);
-router.get("/saved/:userId", verifyToken, getSavedActs);
-router.delete("/saved/:id", verifyToken, deleteSavedAct);
+router.post("/saved", verifyToken, saveActForUser);
+router.get("/saved", verifyToken, getUserSavedActs);
+router.delete("/saved/:id", verifyToken, unsaveAct);
+router.put("/saved/:id/complete", verifyToken, completeActForUser);
 
 export default router;

@@ -7,7 +7,10 @@ import { SavedActModel } from "../models/savedActModel";
  * POST /api/saved
  * Save act for user
  */
-export async function saveAct(req: Request, res: Response): Promise<void> {
+export async function saveActForUser(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     await connect();
     const userId = (req as any).user.userId;
@@ -30,17 +33,22 @@ export async function saveAct(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * GET /api/saved/:userId
- * Get saved acts of a user
+ * GET /api/saved
+ * Get saved acts of user
  */
-export async function getSavedActs(req: Request, res: Response): Promise<void> {
+export async function getUserSavedActs(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     await connect();
-    const userId = req.params.userId;
+    const userId = (req as any).user.userId;
+
     const savedActs = await SavedActModel.find({ user: userId }).populate(
       "act",
       "title description"
     );
+
     res.status(200).json(savedActs);
   } catch (error) {
     res.status(500).json({
@@ -50,10 +58,10 @@ export async function getSavedActs(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * DELETE /api/saved/:id
+ * PUT /api/saved/:id/complete
  * Mark a saved act as completed and delete from saved acts
  */
-export async function deleteSavedAct(
+export async function completeActForUser(
   req: Request,
   res: Response
 ): Promise<void> {
@@ -80,6 +88,34 @@ export async function deleteSavedAct(
   } catch (error) {
     res.status(500).json({
       error: "Error marking act as completed: " + (error as Error).message,
+    });
+  }
+}
+
+/**
+ * DELETE /api/saved/:id
+ * Unsave act without marking it as completed
+ */
+export async function unsaveAct(req: Request, res: Response): Promise<void> {
+  try {
+    await connect();
+    const userId = (req as any).user.userId;
+    const savedActId = req.params.id;
+
+    const savedAct = await SavedActModel.findOne({
+      user: userId,
+      _id: savedActId,
+    });
+    if (!savedAct) {
+      res.status(404).json({ error: "Saved act not found for this user." });
+      return;
+    }
+
+    await SavedActModel.findByIdAndDelete(savedAct._id);
+    res.status(200).json({ message: "Act successfully unsaved." });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error unsaving act: " + (error as Error).message,
     });
   }
 }
