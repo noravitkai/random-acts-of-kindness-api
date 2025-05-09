@@ -36,16 +36,12 @@ export async function createKindnessAct(
     description,
     difficulty,
     createdBy,
+    status: userRole === "admin" ? status || "approved" : "pending",
   };
-
-  // if (userRole === "admin" && status) {
-  //   kindnessActData.status = status;
-  // }
 
   try {
     const kindnessAct = new KindnessActModel(kindnessActData);
     const result = await kindnessAct.save();
-
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: "Error creating kindness act: " + error });
@@ -133,6 +129,28 @@ export async function getKindnessActById(
     res.status(200).json(kindnessAct);
   } catch (error) {
     res.status(500).json({ error: "Error retrieving kindness act: " + error });
+  }
+}
+
+/**
+ * Retrieve every kindness act in the system
+ * Admin‐only endpoint
+ */
+export async function getAllKindnessActs(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    await connect();
+    const allActs = await KindnessActModel.find({}).populate(
+      "createdBy",
+      "_id username email"
+    );
+    res.status(200).json(allActs);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error retrieving all kindness acts: " + error });
   }
 }
 
