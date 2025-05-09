@@ -14,6 +14,13 @@ export async function saveActForUser(
   try {
     await connect();
     const userId = (req as any).user.userId;
+    const userRole = (req as any).user.role;
+
+    if (userRole === "admin") {
+      res.status(403).json({ error: "Admins cannot save acts." });
+      return;
+    }
+
     const { act } = req.body;
 
     const existing = await SavedActModel.findOne({ user: userId, act });
@@ -67,6 +74,13 @@ export async function completeActForUser(
 ): Promise<void> {
   try {
     await connect();
+    const userRole = (req as any).user.role;
+
+    if (userRole === "admin") {
+      res.status(403).json({ error: "Admins cannot complete acts." });
+      return;
+    }
+
     const savedActId = req.params.id;
 
     const savedAct = await SavedActModel.findById(savedActId);
@@ -100,6 +114,13 @@ export async function unsaveAct(req: Request, res: Response): Promise<void> {
   try {
     await connect();
     const userId = (req as any).user.userId;
+    const userRole = (req as any).user.role;
+
+    if (userRole === "admin") {
+      res.status(403).json({ error: "Admins cannot unsave acts." });
+      return;
+    }
+
     const savedActId = req.params.id;
 
     const savedAct = await SavedActModel.findOne({
