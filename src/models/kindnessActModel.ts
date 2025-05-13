@@ -3,8 +3,8 @@ import { KindnessAct } from "../interfaces/kindnessActInterface";
 
 const kindnessActSchema = new Schema<KindnessAct>(
   {
-    title: { type: String, required: true, min: 3, max: 255 },
-    description: { type: String, required: true, min: 10, max: 1024 },
+    title: { type: String, required: true, min: 5, max: 60 },
+    description: { type: String, required: true, min: 20, max: 255 },
     // category: { type: Schema.Types.ObjectId, ref: "Category", required: true }, // TODO: Include when categories get implemented
     difficulty: {
       type: String,
