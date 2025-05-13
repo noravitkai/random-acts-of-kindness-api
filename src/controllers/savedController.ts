@@ -103,9 +103,24 @@ export async function completeActForUser(
       return;
     }
 
+    // Try fetching fresh snapshot; fall back to saved snapshot if deleted
+    let { title, description, category, difficulty } = savedAct;
+    const actDoc = await KindnessActModel.findById(savedAct.act).select(
+      "title description category difficulty"
+    );
+    if (actDoc) {
+      title = actDoc.title;
+      description = actDoc.description;
+      category = actDoc.category?.toString() || "";
+      difficulty = actDoc.difficulty;
+    }
     const completedAct = new CompletedActModel({
       user: savedAct.user,
       act: savedAct.act,
+      title,
+      description,
+      category,
+      difficulty,
       completedAt: new Date(),
     });
     await completedAct.save();
