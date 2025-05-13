@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { connect } from "../repository/database";
 import { CompletedActModel } from "../models/completedActModel";
 import { SavedActModel } from "../models/savedActModel";
+import { KindnessActModel } from "../models/kindnessActModel";
 
 /**
  * POST /api/saved
@@ -29,7 +30,22 @@ export async function saveActForUser(
       return;
     }
 
-    const savedAct = new SavedActModel({ user: userId, act });
+    // Fetch act snapshot
+    const actDoc = await KindnessActModel.findById(act).select(
+      "title description category difficulty"
+    );
+    if (!actDoc) {
+      res.status(404).json({ error: "Act of kindness not found." });
+      return;
+    }
+    const savedAct = new SavedActModel({
+      user: userId,
+      act,
+      title: actDoc.title,
+      description: actDoc.description,
+      category: actDoc.category || "",
+      difficulty: actDoc.difficulty,
+    });
     const result = await savedAct.save();
     res.status(201).json(result);
   } catch (error) {
@@ -51,11 +67,9 @@ export async function getUserSavedActs(
     await connect();
     const userId = (req as any).user.userId;
 
-    const savedActs = await SavedActModel.find({ user: userId }).populate(
-      "act",
-      "title description"
+    const savedActs = await SavedActModel.find({ user: userId }).select(
+      "_id act title description category difficulty savedAt"
     );
-
     res.status(200).json(savedActs);
   } catch (error) {
     res.status(500).json({

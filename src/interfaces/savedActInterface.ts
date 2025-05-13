@@ -7,4 +7,8 @@ export interface SavedAct extends Document {
   user: Types.ObjectId | User["_id"];
   act: Types.ObjectId | KindnessAct["_id"];
   savedAt: Date;
+  title: string;
+  description?: string;
+  category?: string;
+  difficulty?: "easy" | "medium" | "hard";
 }
