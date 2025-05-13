@@ -39,7 +39,7 @@ router.post("/user/login", loginUser);
 // Routes for acts of kindness
 router.post("/acts", verifyToken, createKindnessAct);
 router.get("/acts/user", verifyToken, getAllSuggestedActs);
-router.get("/acts/all", verifyToken, getAllKindnessActs);
+router.get("/acts/all", verifyToken, verifyAdmin, getAllKindnessActs);
 router.get("/acts", getApprovedKindnessActs);
 router.get("/acts/:id", verifyToken, getKindnessActById);
 router.put("/acts/:id", verifyToken, updateKindnessActById);

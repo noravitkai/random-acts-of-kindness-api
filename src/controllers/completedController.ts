@@ -4,9 +4,10 @@ import { CompletedActModel } from "../models/completedActModel";
 import { KindnessActModel } from "../models/kindnessActModel";
 
 /**
- * POST /completed
- * Body: { act: "<kindnessActId>" }
- * Requires auth-token header
+ * Records a user's completed act of kindness
+ * @param req – auth-token and act ID
+ * @param res – created record or error
+ * @returns void
  */
 export async function createCompletedAct(
   req: Request,
@@ -16,7 +17,7 @@ export async function createCompletedAct(
     await connect();
     const userId = (req as any).user.userId;
     const { act } = req.body;
-    // Fetch act snapshot
+    // load original act details
     const actDoc = await KindnessActModel.findById(act).select(
       "title description category difficulty"
     );
@@ -42,8 +43,10 @@ export async function createCompletedAct(
 }
 
 /**
- * GET /completed/:userId
- * Requires auth-token header
+ * Retrieves completed acts for the given user
+ * @param req – userId
+ * @param res – list of completed acts or error
+ * @returns void
  */
 export async function getCompletedActsByUser(
   req: Request,

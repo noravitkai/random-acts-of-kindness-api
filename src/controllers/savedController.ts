@@ -5,8 +5,10 @@ import { SavedActModel } from "../models/savedActModel";
 import { KindnessActModel } from "../models/kindnessActModel";
 
 /**
- * POST /api/saved
- * Save act for user
+ * Saves kindness act for the given user
+ * @param req – auth-token and act ID
+ * @param res – saved record or error
+ * @returns void
  */
 export async function saveActForUser(
   req: Request,
@@ -30,7 +32,7 @@ export async function saveActForUser(
       return;
     }
 
-    // Fetch act snapshot
+    // Load original act details
     const actDoc = await KindnessActModel.findById(act).select(
       "title description category difficulty"
     );
@@ -56,8 +58,10 @@ export async function saveActForUser(
 }
 
 /**
- * GET /api/saved
- * Get saved acts of user
+ * Retrieves saved acts for the given user
+ * @param req – auth-token
+ * @param res – list of saved acts or error
+ * @returns void
  */
 export async function getUserSavedActs(
   req: Request,
@@ -79,8 +83,10 @@ export async function getUserSavedActs(
 }
 
 /**
- * PUT /api/saved/:id/complete
- * Mark a saved act as completed and delete from saved acts
+ * Marks a saved act as completed, removing from the saved list
+ * @param req – auth-token and saved act ID
+ * @param res – confirmation message or error
+ * @returns void
  */
 export async function completeActForUser(
   req: Request,
@@ -99,11 +105,11 @@ export async function completeActForUser(
 
     const savedAct = await SavedActModel.findById(savedActId);
     if (!savedAct) {
-      res.status(404).json({ error: "Saved act not found." });
+      res.status(404).json({ error: "Act of kindness not found." });
       return;
     }
 
-    // Try fetching fresh snapshot; fall back to saved snapshot if deleted
+    // Reload act details, fallback to saved data
     let { title, description, category, difficulty } = savedAct;
     const actDoc = await KindnessActModel.findById(savedAct.act).select(
       "title description category difficulty"
@@ -136,8 +142,10 @@ export async function completeActForUser(
 }
 
 /**
- * DELETE /api/saved/:id
- * Unsave act without marking it as completed
+ * Removes a kindness act from the saved list of a user
+ * @param req – auth-token and saved act ID
+ * @param res – confirmation message or error
+ * @returns void
  */
 export async function unsaveAct(req: Request, res: Response): Promise<void> {
   try {
@@ -146,7 +154,7 @@ export async function unsaveAct(req: Request, res: Response): Promise<void> {
     const userRole = (req as any).user.role;
 
     if (userRole === "admin") {
-      res.status(403).json({ error: "Admins cannot unsave acts." });
+      res.status(403).json({ error: "Admins cannot unsave kindness acts." });
       return;
     }
 
