@@ -3,6 +3,7 @@ import dotenvFlow from "dotenv-flow";
 import cors from "cors";
 import routes from "./routes";
 import { connect } from "./repository/database";
+import { setupDocs } from "./util/documentation";
 
 dotenvFlow.config();
 
@@ -24,6 +25,9 @@ app.use(
 app.options("*", cors());
 
 app.use(express.json());
+
+setupDocs(app);
+
 app.use("/api", routes);
 
 export async function startServer() {

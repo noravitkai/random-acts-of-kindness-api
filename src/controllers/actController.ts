@@ -2,11 +2,12 @@ import { Request, Response } from "express";
 import { KindnessActModel } from "../models/kindnessActModel";
 // import { CategoryModel } from "../models/categoryModel"; // TODO: Add category handling later on
 import { connect } from "../repository/database";
-import mongoose from "mongoose";
 
 /**
- * Create a new kindness act
- * Regular users can create acts, but only admins can set status
+ * Creates a new act
+ * @param req – act and user info
+ * @param res – created act of kindness or error
+ * @returns void
  */
 export async function createKindnessAct(
   req: Request,
@@ -36,12 +37,18 @@ export async function createKindnessAct(
     description,
     difficulty,
     createdBy,
-    status: userRole === "admin" ? status || "approved" : "pending",
   };
 
+  if (userRole === "admin") {
+    kindnessActData.status = "approved";
+  }
+
   try {
+    await connect();
+
     const kindnessAct = new KindnessActModel(kindnessActData);
     const result = await kindnessAct.save();
+
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: "Error creating kindness act: " + error });
@@ -49,8 +56,10 @@ export async function createKindnessAct(
 }
 
 /**
- * Retrieve all suggested kindness acts created by the authenticated user
- * Accessible by each authenticated user, including pending, rejected, and approved acts
+ * Retrieves all kindness acts suggested by the logged-in user
+ * @param req – user info
+ * @param res – user's acts or error
+ * @returns void
  */
 export async function getAllSuggestedActs(
   req: Request,
@@ -62,12 +71,11 @@ export async function getAllSuggestedActs(
     const userId = (req as any).user?.userId;
     if (!userId) {
       res.status(403).json({
-        error: "Authentication required. Please log in to access your acts.",
+        error: "Login needed to access your suggested acts.",
       });
       return;
     }
 
-    // Fetch all acts by the user regardless of status
     const userActs = await KindnessActModel.find({
       createdBy: userId,
     }).populate("createdBy", "_id username email");
@@ -81,8 +89,9 @@ export async function getAllSuggestedActs(
 }
 
 /**
- * Retrieve all approved kindness acts
- * Accessible by each authenticated user
+ * Retrieves all the approved kindness acts
+ * @param res – approved acts or error
+ * @returns void
  */
 export async function getApprovedKindnessActs(
   req: Request,
@@ -91,22 +100,21 @@ export async function getApprovedKindnessActs(
   try {
     await connect();
 
-    // Only fetch acts with status "approved"
     const approvedActs = await KindnessActModel.find({
       status: "approved",
     }).populate("createdBy", "_id username email");
 
     res.status(200).json(approvedActs);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error retrieving approved kindness acts: " + error });
+    res.status(500).json({ error: "Failed to load approved acts: " + error });
   }
 }
 
 /**
- * Retrieve a kindness act by its ID
- * Accessible by each authenticated user
+ * Retrieves a kindness act by its ID
+ * @param req – act ID
+ * @param res – an act or error
+ * @returns void
  */
 export async function getKindnessActById(
   req: Request,
@@ -122,7 +130,7 @@ export async function getKindnessActById(
       .populate("createdBy", "username email");
 
     if (!kindnessAct) {
-      res.status(404).json({ error: "Kindness act not found." });
+      res.status(404).json({ error: "Kindness act doesn't exist." });
       return;
     }
 
@@ -133,8 +141,10 @@ export async function getKindnessActById(
 }
 
 /**
- * Retrieve every kindness act in the system
- * Admin‐only endpoint
+ * Retrieves all kindness acts (only admin operations)
+ * @param req – admin info
+ * @param res – all acts or error
+ * @returns void
  */
 export async function getAllKindnessActs(
   req: Request,
@@ -155,8 +165,10 @@ export async function getAllKindnessActs(
 }
 
 /**
- * Update a kindness act by its ID
- * Only admins can change the status, users can update the acts they created
+ * Updates kindness act by its ID
+ * @param req – act ID, update and user info
+ * @param res – updated act or error
+ * @returns void
  */
 export async function updateKindnessActById(
   req: Request,
@@ -206,13 +218,15 @@ export async function updateKindnessActById(
       updatedAct,
     });
   } catch (error) {
-    res.status(500).json({ error: "Error updating kindness act: " + error });
+    res.status(500).json({ error: "Error while updating the act: " + error });
   }
 }
 
 /**
- * Delete a kindness act by its ID
- * Admins can delete any act, while users can delete only the acts they created
+ * Deletes a kindness act by its ID
+ * @param req – act ID and user info
+ * @param res – success or error message
+ * @returns void
  */
 export async function deleteKindnessActById(
   req: Request,
@@ -238,7 +252,7 @@ export async function deleteKindnessActById(
 
     if (!isUser && !isAdmin) {
       res.status(403).json({
-        error: "You do not have permission to delete this kindness act.",
+        error: "You are not allowed to delete this kindness act.",
       });
       return;
     }
@@ -246,7 +260,7 @@ export async function deleteKindnessActById(
     await kindnessAct.deleteOne();
 
     res.status(200).json({
-      message: "Kindness act successfully deleted.",
+      message: "The kindness act has been removed.",
     });
   } catch (error) {
     res.status(500).json({ error: "Error deleting kindness act: " + error });

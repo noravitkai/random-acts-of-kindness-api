@@ -7,8 +7,13 @@ import { UserModel } from "../models/userModel";
 import { User } from "../interfaces/userInterface";
 import { connect } from "../repository/database";
 
+// ===== Endpoints =====
+
 /**
- * Register a new user
+ * Registers a new account
+ * @param req – username, email, and password
+ * @param res – user data or error
+ * @returns void
  */
 export async function registerUser(req: Request, res: Response): Promise<void> {
   try {
@@ -55,7 +60,10 @@ export async function registerUser(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * Log in an existing user
+ * Logs in a user and returns token
+ * @param req – email and password
+ * @param res – token and user info or error
+ * @returns void
  */
 export async function loginUser(req: Request, res: Response): Promise<void> {
   try {
@@ -115,11 +123,14 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
   }
 }
 
+// ===== Middlewares =====
+
 /**
- * Verify the client's JWT token
- * @param req
- * @param res
- * @param next
+ * Verifies JWT from header
+ * @param req – auth-token
+ * @param res – for error replies
+ * @param next – calls next handler if token is valid
+ * @returns void
  */
 export function verifyToken(
   req: Request,
@@ -151,10 +162,11 @@ export function verifyToken(
 }
 
 /**
- * Verify the client's privileges
- * @param req
- * @param res
- * @param next
+ * Verifies if the user has admin rights
+ * @param req – user info
+ * @param res – for error replies
+ * @param next – calls next handler if user is admin
+ * @returns void
  */
 export function verifyAdmin(
   req: Request,
@@ -176,8 +188,12 @@ export function verifyAdmin(
   next();
 }
 
+// ===== Validation =====
+
 /**
- * Validate user registration info
+ * Checks signup data (username, email, password)
+ * @param data – registration payload
+ * @returns ValidationResult with error details when invalid
  */
 function validateUserRegistrationInfo(data: User): ValidationResult {
   const schema = Joi.object({
@@ -203,7 +219,9 @@ function validateUserRegistrationInfo(data: User): ValidationResult {
 }
 
 /**
- * Validate user login info
+ * Checks login data (email, password)
+ * @param data – login payload
+ * @returns ValidationResult with error details when invalid
  */
 function validateUserLoginInfo(data: User): ValidationResult {
   const schema = Joi.object({
