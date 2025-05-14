@@ -39,9 +39,9 @@ export async function createKindnessAct(
     createdBy,
   };
 
-  // if (userRole === "admin" && status) {
-  //   kindnessActData.status = status;
-  // }
+  if (userRole === "admin") {
+    kindnessActData.status = "approved";
+  }
 
   try {
     await connect();
